@@ -33,8 +33,12 @@ public class MoviesController : Controller
         // Similar to FirstOrDefault, but throws if more than one match is found.
         // var movie = await _context.Movies.SingleOrDefaultAsync(m => m.Id == id);
         // Serves match from memory if already fetched, otherwise queries DB.
-        var movie = await _context.Movies.FindAsync(id);
+        // var movie = await _context.Movies.FindAsync(id);
         
+        var movie = await _context.Movies
+            .Include(movie => movie.Genre)
+            .SingleOrDefaultAsync(m => m.Id == id);
+
         return movie == null
             ? NotFound()
             : Ok(movie);
@@ -48,9 +52,22 @@ public class MoviesController : Controller
             .Where(movie => movie.ReleaseDate.Year == year)
             .Select(movie => new MovieTitle { Id = movie.Id, Title = movie.Title})
             .ToListAsync();
-
+    
         return Ok(filteredTitles);
     }
+    
+    // [HttpGet("by-year/{year:int}")]
+    // [ProducesResponseType(typeof(List<MovieTitle>), StatusCodes.Status200OK)]
+    // public async Task<IActionResult> GetAllByYear([FromRoute] int year)
+    // {
+    //     IQueryable<Movie> allMovies = _context.Movies;
+    //     //The request to the database wad not made yet
+    //     IQueryable<Movie> filteredMovies = allMovies.Where(m => m.ReleaseDate.Year == year);
+    //     //The request to the database wad not made yet
+    //     var result = await filteredMovies.ToListAsync();
+    //     //The request to the database wad made
+    //     return Ok(result);
+    // }
     
     [HttpPost]
     [ProducesResponseType(typeof(Movie), StatusCodes.Status201Created)]

@@ -1,6 +1,0 @@
-@Dometrain.EFCore.API_HostAddress = http://localhost:5094
-
-GET {{Dometrain.EFCore.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
