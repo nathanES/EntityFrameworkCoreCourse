@@ -10,6 +10,7 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
     public void Configure(EntityTypeBuilder<Movie> builder)
     {
         builder.ToTable("Pictures")
+            .HasQueryFilter(movie => movie.ReleaseDate >= new DateTime(1990,1,1))
             .HasKey(movie => movie.Id);
     
         builder.Property(movie => movie.Title)
@@ -25,6 +26,20 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
             .HasColumnType("varchar(max)")
             .HasColumnName("Plot");
         
+        builder.Property(movie => movie.AgeRating)
+            .HasColumnType("varchar(32)")
+            .HasConversion<string>();
+
+        
+        // builder.ComplexProperty(movie => movie.Director);//It add a column by propertie of movie.Director in the database
+        
+        //It's a separate entity and can be had to another Table
+        builder.OwnsOne(movie => movie.Director)
+            .ToTable("Movie_Directors");
+        
+        builder.OwnsMany(movie => movie.Actors)
+            .ToTable("Movie_Actors");
+        
         builder.HasOne(movie => movie.Genre)
             .WithMany(genre => genre.Movies)
             .HasPrincipalKey(genre => genre.Id)
@@ -38,7 +53,16 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
             ReleaseDate = new DateTime(1999, 9, 10),
             Synopsis = "Ed Norton and Brad Pitt have a couple of fist fights with each other.",
             MainGenreId = 1,
-            //AgeRating = AgeRating.Adolescent
+            AgeRating = AgeRating.Adolescent
         });
+        
+        builder.OwnsOne(movie => movie.Director)
+            .HasData(new { MovieId = 1, FirstName = "David", LastName = "Fincher" });
+
+        builder.OwnsMany(movie => movie.Actors)
+            .HasData(
+                new { MovieId = 1, Id = 1, FirstName = "Edward", LastName = "Norton" },
+                new { MovieId = 1, Id = 2, FirstName = "Brad", LastName = "Pitt" }
+            );
     }
 }
