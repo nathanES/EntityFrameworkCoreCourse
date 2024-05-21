@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Dometrain.EFCore.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,24 +12,40 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+// Configure Serilog
+var serilog = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+// Configure it for Microsoft.Extensions.Logging
+builder.Services.AddSerilog(serilog);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add a DbContext here
-builder.Services.AddDbContext<MoviesContext>();
+builder.Services.AddDbContext<MoviesContext>(optionsBuilder =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MoviesContext");
+    optionsBuilder
+        .UseSqlServer(connectionString);
+    //.LogTo(Console.WriteLine);//If you remove LogTo, it will take the Logger used in your application
+},
+ServiceLifetime.Scoped,//usualy scoped is the best choice
+ServiceLifetime.Singleton);//The option is never changed so we can choose the singleton
 
 
 var app = builder.Build();
 
-// DIRTY HACK, we WILL come back to fix this
-var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<MoviesContext>();
-//It verify the latest migration in the database and throw an exception if it's not up to date
-var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-if (pendingMigrations.Any())
-    throw new Exception("Database is not fully migrated for MoviesContext.");
-
+// Check if the DB was migrated
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<MoviesContext>();
+    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+    if (pendingMigrations.Any())
+        throw new Exception("Database is not fully migrated for MoviesContext.");
+}
 
 
 // Configure the HTTP request pipeline.
