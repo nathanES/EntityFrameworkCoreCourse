@@ -1,9 +1,16 @@
 using System.Text.Json.Serialization;
 using Dometrain.EFCore.API.Data;
+using Dometrain.EFCore.API.Repositories;
+using Dometrain.EFCore.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddTransient<IGenreRepository, GenreRepository>();
+builder.Services.AddTransient<IBatchGenreService, BatchGenreService>();
+builder.Services.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
 
 // Add services to the container.
 builder.Services.AddControllers()	

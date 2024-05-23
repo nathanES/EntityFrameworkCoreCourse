@@ -7,11 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{476E8E9A-D6ED-4122-ACAD-7C667766BD73}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dometrain.EFCore.Tests", "Dometrain.EFCore.Tests\Dometrain.EFCore.Tests.csproj", "{62E47712-3708-4ACA-9FA6-05344AAC60F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dometrain.EFCore.SimpleApi", "Dometrain.EFCore.SimpleApi\Dometrain.EFCore.SimpleApi.csproj", "{6D0C29CA-CDEE-4DE9-AB22-4DA726A38761}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dometrain.EFCoreTenants.Databases", "Dometrain.EFCoreTenants.Databases\Dometrain.EFCoreTenants.Databases.csproj", "{CC841CB4-4732-4816-A1C8-218C4CC2C595}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dometrain.EFCore.Tenants.QueryFilter", "Dometrain.EFCore.Tenants.QueryFilter\Dometrain.EFCore.Tenants.QueryFilter.csproj", "{D26CF9C8-D193-47C8-9F84-B3091C7A3C9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,9 +33,15 @@ Global
 		{6D0C29CA-CDEE-4DE9-AB22-4DA726A38761}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D0C29CA-CDEE-4DE9-AB22-4DA726A38761}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D0C29CA-CDEE-4DE9-AB22-4DA726A38761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC841CB4-4732-4816-A1C8-218C4CC2C595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC841CB4-4732-4816-A1C8-218C4CC2C595}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC841CB4-4732-4816-A1C8-218C4CC2C595}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC841CB4-4732-4816-A1C8-218C4CC2C595}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D26CF9C8-D193-47C8-9F84-B3091C7A3C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D26CF9C8-D193-47C8-9F84-B3091C7A3C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D26CF9C8-D193-47C8-9F84-B3091C7A3C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D26CF9C8-D193-47C8-9F84-B3091C7A3C9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{62E47712-3708-4ACA-9FA6-05344AAC60F6} = {476E8E9A-D6ED-4122-ACAD-7C667766BD73}
-		{6D0C29CA-CDEE-4DE9-AB22-4DA726A38761} = {476E8E9A-D6ED-4122-ACAD-7C667766BD73}
 	EndGlobalSection
 EndGlobal

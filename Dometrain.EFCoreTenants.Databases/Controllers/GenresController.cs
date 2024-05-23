@@ -1,23 +1,20 @@
-using Dometrain.EFCore.API.Models;
-using Dometrain.EFCore.API.Repositories;
-using Dometrain.EFCore.API.Services;
+using Dometrain.EFCoreTenants.Databases.Models;
+using Dometrain.EFCoreTenants.Databases.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dometrain.EFCore.API.Controllers;
+namespace Dometrain.EFCoreTenants.Databases.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class GenresController : Controller
 {
     private readonly IGenreRepository _repository;
-    private readonly IBatchGenreService _batchService;
 
-    public GenresController(IGenreRepository repository, IBatchGenreService batchService)
+    public GenresController(IGenreRepository repository)
     {
         _repository = repository;
-        _batchService = batchService;
     }
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Genre>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
@@ -31,12 +28,12 @@ public class GenresController : Controller
     public async Task<IActionResult> Get([FromRoute] int id)
     {
         var genre = await _repository.Get(id);
-        
+
         return genre == null
             ? NotFound()
             : Ok(genre);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(typeof(Genre), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] Genre genre)
@@ -45,16 +42,7 @@ public class GenresController : Controller
 
         return CreatedAtAction(nameof(Get), new { id = createdGenre.Id }, createdGenre);
     }
-    
-    [HttpPost("batch")]
-    [ProducesResponseType(typeof(IEnumerable<Genre>), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateAll([FromBody] List<Genre> genres)
-    {
-        var response = await _batchService.CreateGenres(genres);
 
-        return CreatedAtAction(nameof(GetAll), new{}, response);
-    }
-    
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(Genre), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,16 +52,16 @@ public class GenresController : Controller
 
         return updatedGenre is null
             ? NotFound()
-            :Ok(updatedGenre);
+            : Ok(updatedGenre);
     }
-    
+
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Remove([FromRoute] int id)
     {
         var success = await _repository.Delete(id);
-        
+
         return success ? Ok() : NotFound();
     }
 }
