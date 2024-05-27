@@ -9,10 +9,18 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
 {
     public void Configure(EntityTypeBuilder<Movie> builder)
     {
-        builder.ToTable("Pictures")
+        builder
+            .ToTable("Pictures")
+            .UseTptMappingStrategy()//Use Table per Type
+            // .UseTpcMappingStrategy()//Use Table per Class
+            // .UseTphMappingStrategy()//Use Table per Type
             .HasQueryFilter(movie => movie.ReleaseDate >= new DateTime(1990,1,1))
             .HasKey(movie => movie.Id);
     
+        builder
+            .HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate });
+
+        
         builder.Property(movie => movie.Title)
             .HasColumnType("varchar")
             .HasMaxLength(128)
@@ -30,19 +38,38 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
             .HasColumnType("varchar(32)")
             .HasConversion<string>();
 
+        builder.Property(movie => movie.MainGenreName)
+            .HasMaxLength(256)
+            .HasColumnType("varchar");
+
+        builder
+            .HasOne(movie => movie.Genre)
+            .WithMany(genre => genre.Movies)
+            .HasPrincipalKey(genre => genre.Name)
+            .HasForeignKey(movie => movie.MainGenreName);
         
         // builder.ComplexProperty(movie => movie.Director);//It add a column by propertie of movie.Director in the database
         
         //It's a separate entity and can be had to another Table
-        builder.OwnsOne(movie => movie.Director)
-            .ToTable("Movie_Directors");
+        // builder.OwnsOne(movie => movie.Director)
+        //     .ToTable("Movie_Directors");
+        //
+        // builder.OwnsMany(movie => movie.Actors)
+        //     .ToTable("Movie_Actors");
         
-        builder.OwnsMany(movie => movie.Actors)
-            .ToTable("Movie_Actors");
-        
-        builder.HasOne(movie => movie.Genre)
-            .WithMany(genre => genre.Movies)
-            .HasPrincipalKey(genre => genre.Id)
-            .HasForeignKey(movie => movie.MainGenreId);
+
+    }
+}
+public class CinemaMovieMapping : IEntityTypeConfiguration<CinemaMovie>
+{
+    public void Configure(EntityTypeBuilder<CinemaMovie> builder)
+    {
+    }
+}
+
+public class TelevisionMovieMapping : IEntityTypeConfiguration<TelevisionMovie>
+{
+    public void Configure(EntityTypeBuilder<TelevisionMovie> builder)
+    {
     }
 }

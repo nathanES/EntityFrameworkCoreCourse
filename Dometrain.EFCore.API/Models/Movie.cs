@@ -1,6 +1,6 @@
 namespace Dometrain.EFCore.API.Models;
 
-public class Movie
+public abstract class Movie
 {
     public int Id { get; set; }
     public string? Title { get; set; }    
@@ -8,10 +8,18 @@ public class Movie
     public string? Synopsis { get; set; }
     public AgeRating AgeRating { get; set; }
     public decimal InternetRating { get; set; }
-    
-    public Person Director { get; set; }
-    public ICollection<Person> Actors { get; set; }
-    
-    public Genre Genre { get; set; }
-    public int MainGenreId { get; set; }
+    public required Genre Genre { get; set; }
+    public required string MainGenreName { get; set; }
+    public ExternalInformation? ExternalInformation { get; set; }
+    public List<Actor> Actors { get; set; } = new();//Navigation Property
+
+}
+
+public class CinemaMovie : Movie
+{
+    public required decimal GrossRevenu { get; set; }
+}
+public class TelevisionMovie : Movie
+{
+    public required string ChannelFirstAiredOn { get; set; }
 }

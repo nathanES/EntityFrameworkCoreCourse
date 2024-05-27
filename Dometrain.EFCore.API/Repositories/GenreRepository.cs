@@ -11,6 +11,8 @@ public interface IGenreRepository
     Task<Genre> Create(Genre genre);
     Task<Genre?> Update(int id, Genre genre);
     Task<bool> Delete(int id);
+    Task<IEnumerable<Genre>> GetAllFromQuery();
+    Task<IEnumerable<GenreName>> GetNames();
 }
 
 public class GenreRepository: IGenreRepository
@@ -72,5 +74,34 @@ public class GenreRepository: IGenreRepository
             await _context.SaveChangesAsync();
 
         return true;
+    }
+    
+    public async Task<IEnumerable<Genre>> GetAllFromQuery()
+    {
+        var minimumGenreId = 2;
+
+        //It's preventing from sql injection, because it use database parameter
+        var genres = await _context.Genres
+            .FromSql($"SELECT * FROM [dbo].[Genres] WHERE ID >= {minimumGenreId}")
+            //.FromSqlRaw($"SELECT * FROM [dbo].[Genres] WHERE ID >= {0}", minimumGenreId)
+            .Where(genre => genre.Name != "Comedy")
+            .ToListAsync();
+
+        return genres;
+    }
+
+    public async Task<IEnumerable<GenreName>> GetNames()
+    {
+        //Hard way to keyless entities (with modification in dbContext and mapping)
+        // var names = await _context.GenreNames
+        //     .ToListAsync();
+        // return names;
+        
+        //Easy way to keyless entities
+        var names = await _context.Database
+            .SqlQuery<GenreName>($"SELECT Name FROM dbo.Genres")
+            .ToListAsync();
+        
+        return names;
     }
 }
