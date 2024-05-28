@@ -20,6 +20,8 @@ public class MovieMapping : IEntityTypeConfiguration<Movie>
         builder
             .HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate });
 
+        builder.HasIndex(movie => movie.AgeRating)//Ad index
+            .IsDescending();
         
         builder.Property(movie => movie.Title)
             .HasColumnType("varchar")

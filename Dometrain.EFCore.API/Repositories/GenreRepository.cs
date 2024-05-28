@@ -7,6 +7,8 @@ namespace Dometrain.EFCore.API.Repositories;
 public interface IGenreRepository
 {
     Task<IEnumerable<Genre>> GetAll();
+    Task<IEnumerable<Genre>> GetAll(IEnumerable<int> genreIds);
+
     Task<Genre?> Get(int id);
     Task<Genre> Create(Genre genre);
     Task<Genre?> Update(int id, Genre genre);
@@ -35,7 +37,12 @@ public class GenreRepository: IGenreRepository
     {
         return await _context.Genres.FindAsync(id);
     }
-
+    public async Task<IEnumerable<Genre>> GetAll(IEnumerable<int> genreIds)
+    {
+        return await _context.Genres
+            .Where(genre => genreIds.Contains(genre.Id))
+            .ToListAsync();
+    }
     public async Task<Genre> Create(Genre genre)
     {
         await _context.Genres.AddAsync(genre);

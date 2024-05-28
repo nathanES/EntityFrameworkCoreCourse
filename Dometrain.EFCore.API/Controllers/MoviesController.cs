@@ -20,20 +20,51 @@ public class MoviesController : Controller
     [ProducesResponseType(typeof(List<Movie>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _context.Movies.ToListAsync());
+        var movies = await _context.Movies
+            .AsNoTracking()
+            .ToListAsync();
+        return Ok(movies);
+
+        //Explicit
+        // var moviesExplicit = await _context.Movies.ToListAsync();
+        // foreach (var televisionMovie in movies.OfType<TelevisionMovie>())
+        // {
+        //     await _context.Entry(televisionMovie)
+        //         .Collection(movie => movie.Actors)
+        //         .LoadAsync();
+        // }
+        // return Ok(movies);
+        
+        //Include
+        // var moviesInclude = await _context.Movies
+        //     .Include(movie => movie.Actors)
+        //     .ToListAsync();
+        // return Ok(movies);
+
     }
+    
+    private static readonly Func<MoviesContext, AgeRating, IEnumerable<MovieTitle>> CompiledQuery = 
+        EF.CompileQuery((MoviesContext context, AgeRating ageRating)
+            => context.Movies
+                .Where(movie => movie.AgeRating <= ageRating)
+                .Select(movie => new MovieTitle { Id = movie.Id, Title = movie.Title }));
+    
     [HttpGet("until-age/{ageRating}")]
     [ProducesResponseType(typeof(List<MovieTitle>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUntilAge([FromRoute] AgeRating ageRating)
+    public IActionResult GetAllUntilAge([FromRoute] AgeRating ageRating)
     {
-        var filteredTitles = await _context.Movies
-            .Where(movie => movie.AgeRating <= ageRating)
-            .Select(movie => new MovieTitle { Id = movie.Id, Title = movie.Title})
-            .ToListAsync();
+        // var filteredTitles = await _context.Movies
+        //     .Where(movie => movie.AgeRating <= ageRating)
+        //     .Select(movie => new MovieTitle { Id = movie.Id, Title = movie.Title})
+        //     .ToListAsync();
+        //
+        // return Ok(filteredTitles);
+        
+        var filteredTitles = CompiledQuery(_context, ageRating).ToList();
 
         return Ok(filteredTitles);
     }
-
+    
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(Movie), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

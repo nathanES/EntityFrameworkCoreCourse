@@ -36,7 +36,8 @@ builder.Services.AddDbContext<MoviesContext>(optionsBuilder =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MoviesContext");
     optionsBuilder
-        .UseSqlServer(connectionString);
+        .UseSqlServer(connectionString, sqlBuilder =>
+            sqlBuilder.MaxBatchSize(50));
     //.LogTo(Console.WriteLine);//If you remove LogTo, it will take the Logger used in your application
 },
 ServiceLifetime.Scoped,//usualy scoped is the best choice
